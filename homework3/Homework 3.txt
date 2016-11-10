@@ -1,0 +1,314 @@
+Final answers are marked with $$$$.
+
+PROBLEM 1:
+uniqueSize = u
+size = s
+private int find (String s) {
+    for (int i = 0; i < uniqueSize; i++) {					c1 + u*(c2 + c3)
+        if (items[i].text.equals(s)) {						u*c4
+            return i;								c5
+        }
+    }
+    return -1;									c6
+}
+T(u) = c1 + u*(c2 + c3 + c4) + c5 + c6 = O(u)
+
+private void replaceFromBack (int index) {
+    items[index] = items[uniqueSize-1];						c1
+    items[uniqueSize-1] = null;							c2
+}
+T(u) = c1 + c2 = O(1)
+
+private int removeOccurrences (String text, int count) {
+    int index = find(text);							c1 + T_find(u)
+        
+    // Case: no such string toRemove
+    if (index == -1) {								c2
+        return 0;
+    }
+        
+    Entry found = items[index];							c3
+    int newCount = found.count - count;						c4
+        
+    // Case: last instance to remove
+    if (newCount <= 0) {							c5
+        replaceFromBack(index);							T_replaceFromBack(u)
+        size -= found.count;							c6
+        uniqueSize--;								c7
+        return 0;								c8
+        
+    // Case: more than 1 entry left
+    } else {
+        found.count = newCount;
+        size -= count;
+        return newCount;
+    }
+}
+T(u) = T_find(u) + c1 + c2 + c3 + c4 + c5 + T_replaceFromBack(u) + c6 + c7 + c8 = O(u)
+
+public void removeAll (String toNuke) {
+    int index = find(toNuke);							c1 + T_find(u)
+    if (index != -1) {								c2
+        removeOccurrences(toNuke, items[index].count);				T_removeOccurrence(u)
+    }
+}
+$$$$ T(u) = c1 + T_find(u) + c2 + T_removeOccurences(u) = O(u)
+
+public String getNth (int n) {
+    if (n >= size || n < 0) {							c1
+        throw new IllegalArgumentException();
+    }
+        
+    int index = 0,								c2
+        i = 0;									c3
+    Entry currentEntry;								c4
+    do {
+        currentEntry = items[i];						s*c5
+        index += currentEntry.count;						s*c6
+        i++;									s*c7
+    } while (index <= n);							s*c8
+        
+    return currentEntry.text;							c9
+}
+$$$$ T(s) = c1 + c2 + c3 + c4 + s*(c5 + c6 + c7 + c8) + c9 = O(s)
+
+
+PROBLEM 2:
+uniqueSize = u
+size = s
+public void swap (LinkedYarn other) {
+    Node tempHead = head;							c1
+    int tempSize = size,							c2
+        tempUniqueSize = uniqueSize;						c3
+    
+    head = other.head;								c4
+    size = other.size;								c5
+    uniqueSize = other.uniqueSize;						c6
+    
+    other.head = tempHead;							c7
+    other.size = tempSize;							c8
+    other.uniqueSize = tempUniqueSize;						c9
+    modCount++;									c10
+    other.modCount++;								c11
+}
+$$$$ T(u) = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 = O(1)
+
+private void prependNode (Node n) {
+    Node oldHead = head;							c1
+    head = n;									c2
+    if (oldHead != null) {							c3
+        head.next = oldHead;							c4
+        oldHead.prev = head;							c5
+    }
+}
+T(u) = c1 + c2 + c3 + c4 + c5 = O(1)
+
+private Node find (String toFind) {
+    Node curr = head;								c1
+    for (; curr != null; curr = curr.next) {					u*(c2 + c3)
+        if (curr.text.equals(toFind)) {						u*c4
+            break;								c5
+        }
+    }
+    return curr;								c6
+}
+T(u) = c1 + u*(c2 + c3) + c4 + c5 = O(u)
+
+private boolean insertOccurrences (String text, int count) {
+    int index = find(text);							c1 + T_find(u)
+    
+    // Case: new string, so add new Node
+    if (found == null) {							c2
+        prependNode(new Node(text, count));					T_prependNode(u)
+        uniqueSize++;								c3
+        
+    // Case: existing string, so update count
+    } else {
+        found.count += count;
+    }
+    size += count;								c4
+    modCount++;									c5
+    
+    return true;								c6
+}
+T(u) = c1 + T_find(u) + c2 + T_prependNode(u) + c3 + c4 + c5 + c6 = O(u)
+
+public void insert (String toAdd) {
+    insertOccurrences(toAdd, 1);						T_insertOccurences(u)
+}
+$$$$ T(u) = T_insertOccurences(u) = O(u)
+
+
+PROBLEM 3:
+uniqueSize = u1 & u2
+size = s1 & s2
+public LinkedYarn clone () {
+    LinkedYarn dolly = new LinkedYarn();					c1
+    for (Node n = head; n != null; n = n.next) {				c2 + u*(c3 + c4)
+        dolly.prependNode(new Node(n.text, n.count));				u*T_prependNode(u)
+         dolly.size += n.count;							c5
+        dolly.uniqueSize++;							c6
+    }
+    return dolly;								c7
+}
+T(u) = c1 + c2 + u*(c3 + c4 + T_prependNode(u) + c5 + c6) + c7 = O(u) 
+
+public static LinkedYarn knit (LinkedYarn y1, LinkedYarn y2) {
+    LinkedYarn result = y1.clone();						c1 + T_clone(u1)
+    for (Node n = y2.head; n != null; n = n.next) {				c2 + u2*(c3 + c4)
+        result.insertOccurrences(n.text, n.count);				u2 * T_insertOccurences(u1)
+    }	
+    return result;								c5
+}
+$$$$ T(u1, u2) = c1 + T_clone(u1) + c2 + u2(c3 + c4) + u2*T_insertOccurences(u1) + c5 = O(u1 + u1*u2) = O(u1*u2)
+
+
+public boolean isEmpty () {
+    return size == 0;								c1
+}
+T(u) = c1 = O(1)
+
+public boolean isValid () {
+    return owner.modCount == itModCount;					c1
+}
+T(u) = c1 = O(1)
+
+Iterator (LinkedYarn y) {
+    owner = y;									c1
+    itModCount = y.modCount;							c2
+    current = y.head;								c3
+    onCount = 0;								c4
+}
+T(u) = c1 + c2 + c3 + c4 = O(1)
+
+private void verifyIntegrity () {
+    if (!isValid()) {								T_isValid(u)
+        throw new IllegalStateException();					c2
+    }
+}
+T(u) = T_isValid(u) + c2 = O(1)
+
+public boolean hasNext () {
+    if (current.count > onCount+1) {return true;}				c1
+    return isValid() && current.next != null;					T_isValid(u) + c2
+}
+T(u) = c1 + T_isValid(u) + c2 = O(1)
+
+public void next () {
+    verifyIntegrity();								T_verifyIntegrity(u)
+    onCount++;									c1
+    if (onCount >= current.count) {						c2
+        if (!hasNext()) {							T_hasNext(u)
+            throw new NoSuchElementException();
+        }
+        current = current.next;							c3
+        onCount = 0;								c4
+    }
+}
+T(u) = T_verifyIntegrity(u) + c1 + c2 + T_hasNext(u) + c3 + c4 = O(1)
+
+public LinkedYarn.Iterator getIterator () {
+    if (isEmpty()) {								T_isEmpty(u)		
+        throw new IllegalStateException();
+    }
+    return new LinkedYarn.Iterator(this);					T_constructor(u)
+}
+T(u) = T_isEmpty(u) + T_constructor(u) = O(1)
+
+private void deleteNode (Node n) {
+    if (n == head) {								c1
+        head = n.next;								c2
+        if (head != null) {							c3
+            head.prev = null;							c4
+        }
+    }
+    if (n.prev != null) {							c5
+        n.prev.next = n.next;							c6
+    }
+    if (n.next != null) {							c7
+        n.next.prev = n.prev;							c8
+    }
+}
+T(u) = c1 + c2 + c3 + c4 + c5 + c6 + c7 + c8 = O(1)
+
+private int removeOccurrences (String text, int count) {
+    Node found = find(text);							c1 + T_find(u)
+    
+    // Case: no such string toRemove
+    if (found == null) {							c2
+        return 0;
+    }
+    
+    int newCount = found.count - count;						c3
+    modCount++;									c4
+    
+    // Case: last instance to remove
+    if (newCount <= 0) {							c5
+        deleteNode(found);							T_deleteNode(u)
+        size -= found.count;							c6
+        uniqueSize--;								c7
+        return 0;								c8
+    
+    // Case: more than 1 entry left
+    } else {
+        found.count = newCount;							c9
+        size -= count;								c10
+        return newCount;							c11
+    }
+}
+T(u) = c1 + T_find(u) + c2 + c3 + c4 + c5 + T_deleteNode(u) + c6 + c7 + c8 + c9 + c10 + c11 = O(u)
+
+public int remove (String toRemove) {
+    return removeOccurrences(toRemove, 1);					T_removeOccurrences(u)
+}
+T(u) = T_removeOccurrences(u) = O(u)
+
+public boolean contains (String toCheck) {
+    return find(toCheck) != null;						T_find(u) + c1
+}
+T(u) = T_find(u) + c1 = O(u)
+
+public String getString () {
+    verifyIntegrity();								T_verifyIntegrity(u)
+    return current.text;							c1
+}
+T(n) = T_verifyIntegrity(u) + c1 = 0(1)
+
+public static LinkedYarn commonThreads (LinkedYarn y1, LinkedYarn y2) {
+    LinkedYarn result = new LinkedYarn(),					c1
+        y2Clone = y2.clone();							c2 + T_clone(u2)
+      
+    for (LinkedYarn.Iterator i1 = y1.getIterator(); i1.hasNext(); i1.next()) {	T_getIterator(u1) + s1*(T_hastNext(u1) + T_next(u1))
+        String current = i1.getString();					s1*T_getString(u1)
+        if (y2Clone.contains(current)) {					s1*T_contains(u2)
+            result.insert(current);						s1*T_insert(u1)
+            y2Clone.remove(current);						s1*T_remove(u2)
+        }
+    }
+
+    return result;								c3
+}
+$$$$ T(s1, u1, u2) = c1 + c2 + T_clone(u2) + T_getIterator(u1) + s1*(T_hastNext(u1) + T_next(u1) + T_getString(u1) +
+		T_contains(u2) + T_insert(u1) + T_remove(u2)) + c3 = O(s1*(u1 + u2))
+
+public int count (String toCount) {
+    Node toFind = find(toCount);						c1 + T_find(u)
+    return (toFind == null) ? 0 : toFind.count;					c2
+}
+T(u) = c1 + T_find(u) + c2 = O(u)
+    
+
+public static LinkedYarn betterCommonThreads (LinkedYarn y1, LinkedYarn y2) {
+    LinkedYarn result = new LinkedYarn();					c1
+    for (Node curr1 = y1.head; curr1 != null; curr1 = curr1.next) {		c2 + u1*(c3 + c4)
+        String text = curr1.text;						u1*c5
+        int count1 = curr1.count,						u1*c6
+            count2 = y2.count(text);						u1*T_find(u2)
+        if (count2 > 0) {							u1*c7
+            result.insertOccurrences(text, Math.min(count1, count2));		u1*T_insertOccurrences(u1)
+        }
+    }
+    
+    return result;								c8
+}
+$$$$ T(u1) = c1 + c2 + u1*(c3 + c4 + c5 + c6 + T_find(u2) + c7 + T_insertOccurrences(u1) + c8 = O(u1*u2 + u1^2)

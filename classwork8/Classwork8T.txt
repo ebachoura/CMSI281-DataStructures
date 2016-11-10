@@ -1,0 +1,24 @@
+Edward Bachoura
+Classwork 8T---
+
+Classwork 1T:
+T(n) = (c1*n) + c2 + (c3*n) + (c4*n) + (c5*n^2) + (c6*n^2) + (c6*n^2) + (c7*n) + c8
+
+T(n) = O(n^2).
+
+Classwork 3R:
+getAt():
+T(n) = c1
+T(n) = O(1).
+
+checkAndGrow():
+T(n) = c1 + c2 + (c3*n) + (c4*n) + c5
+T(n) = O(n)
+
+shiftRight():
+T(n) = (c1*n) + (c2*n)
+T(n) = O(n)
+
+insertAt():
+T(n) = c1 + (c2 + c3 + (c4*n) + (c5*n) + c6) + ((c7*n) + (c8*n)) + c9
+T(n) = O(n)
