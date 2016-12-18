@@ -1,0 +1,51 @@
+Hashtable:
+Insertion-O(1)
+Because all you have to do in get it's hash, which is O(1), and insert it with random access into its designated bucket.
+Retrieval-O(1)
+Same this as insertion. You get it's hash, and access the bucket at that hash, and if you have a good enough hash function, you should be able to retrieve in O(1).
+
+LinkedList(prepending):
+Insertion-O(1)
+This is constant, because all you have to do is update the reference of the root, and then have the item being inserted point to the old root.
+Retrieval-O(n)
+At worst case, to retrieve an item from a LL, you would have to start at the root and search through the entire list. Which would be n steps.
+
+LinkedList(appending):
+Insertion-O(1)
+For the Java LinkedList, they are doubly-linked which means that they have a root and an end. When appending you would simply set the next of the old end to the new end, and then set the END to the new end.
+Retrieval-O(n)
+At worst case, to retrieve an item from a LL, you would have to start at the root and search through the entire list. Which would be n steps.
+
+ArrayList(prepending):
+Insertion-O(n)
+When prepending an item into a array, you have to increase the indices of every item in the array by 1 in order to ensure that the new item is at index 0.
+Retrieval-O(1)
+When retrieving, all you have to do is give an index and then using random access you can get that element in constant time.
+
+ArrayList(appending):
+Insertion-O(1)
+When appending, all you have to do is insert the item at size - 1 index, which is done at constant time regardless.
+Retrieval-O(1)
+When retrieving, all you have to do is give an index and then using random access you can get that element in constant time.
+
+
+Times for inserting and retrieving 50,000 elements into various Data Structures:
+Hashtable:
+Insertion		0.006		O(1)
+Insertion+Retrieval	0.014		O(1)
+
+LL(prepending):
+Insertion		0.005		O(1)
+Insertion+Retrieval	1.266		O(n)
+
+LL(appending):
+Insertion		0.004		O(1)
+Insertion+Retrieval	1.240		O(n)
+
+AL(prepending):
+Insertion		0.121		O(1)
+Insertion+Retrieval	0.127		O(1)
+
+AL(appending):
+Insertion		0.003		O(1)
+Insertion+Retrieval	0.008		O(1)

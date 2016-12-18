@@ -2,96 +2,279 @@ package homework1;
 
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Timeout;
 
 public class YarnTests {
-
+    
+    // =================================================
+    // Test Configuration
+    // =================================================
+    
+    // Grade record-keeping
+    static int possible = 0, passed = 0;
+    
+    // Global timeout to prevent infinite loops from
+    // crashing the test suite
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(2);
+    
+    // Used as the basic empty Yarn to test; the @Before
+    // method is run before every @Test
+    Yarn ball;
+    @Before
+    public void init () {
+        possible++;
+        ball = new Yarn();
+    }
+    
+    // Used for grading, reports the total number of tests
+    // passed over the total possible
+    @AfterClass
+    public static void gradeReport () {
+        System.out.println("============================");
+        System.out.println("Tests Complete");
+        System.out.println(passed + " / " + possible + " passed!");
+        if ((1.0 * passed / possible) >= 0.9) {
+            System.out.println("[!] Nice job!"); // Automated acclaim!
+        }
+        System.out.println("============================");
+    }
+    
+    
+    // =================================================
+    // Unit Tests
+    // =================================================
+    // For grading purposes, every method has ~3 tests, 
+    // weighted equally and totaled for the score.
+    // The tests increase in difficulty such that the
+    // basics are unlabeled and harder tiers are tagged
+    // t1, t2, t3, ...
+    
+    
+    // Initialization Tests
+    // -------------------------------------------------
     @Test
-    public void testYarn() {
-        Yarn ball = new Yarn();
+    public void testInit() {
+        assertTrue(ball.isEmpty());
+        assertEquals(0, ball.getSize());
+        passed++;
     }
 
+    // Basic Tests
+    // -------------------------------------------------
     @Test
     public void testIsEmpty() {
-        Yarn ball = new Yarn();
         assertTrue(ball.isEmpty());
         ball.insert("not_empty");
         assertFalse(ball.isEmpty());
-        ball.remove("not_empty");
+        passed++;
+    }
+    @Test
+    public void testIsEmpty_t1() {
+        ball.insert("a");
+        ball.insert("a");
+        ball.removeAll("a");
         assertTrue(ball.isEmpty());
+        passed++;
+    }
+    @Test
+    public void testIsEmpty_t2() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("a");
+        ball.removeAll("a");
+        assertFalse(ball.isEmpty());
+        ball.removeAll("b");
+        assertTrue(ball.isEmpty());
+        passed++;
     }
 
     @Test
     public void testGetSize() {
-        Yarn ball = new Yarn();
-        assertEquals(ball.getSize(), 0);
         ball.insert("dup");
         ball.insert("dup");
         assertEquals(ball.getSize(), 2);
         ball.insert("unique");
         assertEquals(ball.getSize(), 3);
+        passed++;
+    }
+    @Test
+    public void testGetSize_t1() {
+        ball.insert("dup");
+        ball.insert("dup");
+        ball.insert("dup");
+        assertEquals(ball.getSize(), 3);
+        passed++;
+    }
+    @Test
+    public void testGetSize_t2() {
+        ball.insert("u1");
+        ball.insert("u2");
+        ball.insert("u3");
+        assertEquals(ball.getSize(), 3);
+        passed++;
     }
 
     @Test
     public void testGetUniqueSize() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         assertEquals(ball.getUniqueSize(), 1);
         ball.insert("unique");
         assertEquals(ball.getUniqueSize(), 2);
-        
-        Yarn emptyYarn = new Yarn();
-        assertEquals(emptyYarn.getUniqueSize(), 0);
+        passed++;
+    }
+    public void testGetUniqueSize_t1() {
+        ball.insert("dup");
+        ball.insert("dup");
+        ball.insert("dup");
+        assertEquals(ball.getUniqueSize(), 1);
+        passed++;
+    }
+    @Test
+    public void testGetUniqueSize_t2() {
+        ball.insert("u1");
+        ball.insert("u2");
+        ball.insert("u3");
+        assertEquals(ball.getUniqueSize(), 3);
+        passed++;
+    }
+    @Test
+    public void testGetUniqueSize_t3() {
+        ball.insert("u1");
+        ball.insert("u2");
+        ball.remove("u1");
+        assertEquals(ball.getUniqueSize(), 1);
+        ball.remove("u2");
+        assertEquals(ball.getUniqueSize(), 0);
+        passed++;
     }
 
+    // Yarn Manipulation Tests
+    // -------------------------------------------------
     @Test
     public void testInsert() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
         assertTrue(ball.contains("dup"));
         assertTrue(ball.contains("unique"));
-
-        Yarn max = new Yarn();
-        String test = "test";
-        while (max.getUniqueSize() < 100) {
-        	test += 1;
-        	max.insert(test);
+        passed++;
+    }
+    @Test
+    public void testInsert_t1() {
+        ball.insert("dup");
+        ball.insert("unique");
+        ball.insert("dup");
+        assertTrue(ball.contains("dup"));
+        assertTrue(ball.contains("unique"));
+        assertEquals(ball.getSize(), 3);
+        assertEquals(ball.getUniqueSize(), 2);
+        passed++;
+    }
+    @Test
+    public void testInsert_t2() {
+        ball.insert("dup");
+        ball.insert("unique");
+        ball.insert("dup");
+        ball.remove("unique");
+        assertTrue(ball.contains("dup"));
+        assertFalse(ball.contains("unique"));
+        assertEquals(ball.getSize(), 2);
+        assertEquals(ball.getUniqueSize(), 1);
+        passed++;
+    }
+    @Test
+    public void testInsert_t3() {
+        ball.insert("dup");
+        ball.insert("dup");
+        ball.insert("dup2");
+        ball.insert("dup3");
+        ball.insert("dup3");
+        ball.remove("dup2");
+        assertEquals(ball.getSize(), 4);
+        assertEquals(ball.getUniqueSize(), 2);
+        passed++;
+    }
+    @Test
+    public void testInsert_t4() {
+        for (int i = 0; i < 105; i++) {
+            ball.insert("" + i);
         }
-        assertFalse(max.insert("last"));
-        
+        assertEquals(ball.getSize(), 100);
+        assertEquals(ball.getUniqueSize(), 100);
+        passed++;
+    }
+    @Test
+    public void testInsert_t5() {
+        for (int i = 0; i < 101; i++) {
+            ball.insert("SAMESIES");
+        }
+        assertEquals(ball.getSize(), 101);
+        assertEquals(ball.getUniqueSize(), 1);
+        passed++;
     }
 
     @Test
     public void testRemove() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         assertEquals(ball.getSize(), 2);
         assertEquals(ball.getUniqueSize(), 1);
-        ball.remove("dup");
+        int dups = ball.remove("dup");
         assertEquals(ball.getSize(), 1);
         assertEquals(ball.getUniqueSize(), 1);
-        
-        Yarn a = new Yarn();
-        a.insert("dog");
-        a.insert("dog");
-        a.remove("dog");
-        assertEquals(a.getSize(), 1);
-        assertEquals(a.getUniqueSize(), 1);
-        assertTrue(a.contains("dog"));
-        a.remove("dog");
-        assertEquals(a.getSize(), 0);
-        assertEquals(a.getUniqueSize(), 0);
-        assertFalse(a.contains("dog"));
-        assertEquals(a.remove("cat"), 0);
+        assertEquals(dups, 1);
+        passed++;
+    }
+    @Test
+    public void testRemove_t1() {
+        ball.insert("uni1");
+        int dups = ball.remove("uni1");
+        assertEquals(ball.getSize(), 0);
+        assertEquals(dups, 0);
+        assertFalse(ball.contains("uni1"));
+        passed++;
+    }
+    @Test
+    public void testRemove_t2() {
+        ball.remove("uni1");
+        ball.insert("uni1");
+        ball.remove("uni");
+        assertEquals(ball.getSize(), 1);
+        assertTrue(ball.contains("uni1"));
+        ball.insert("uni2");
+        ball.insert("uni3");
+        ball.remove("uni1");
+        assertEquals(ball.getSize(), 2);
+        assertFalse(ball.contains("uni1"));
+        passed++;
+    }
+    @Test
+    public void testRemove_t3() {
+        ball.insert("dup1");
+        ball.insert("dup1");
+        ball.insert("dup2");
+        ball.insert("dup2");
+        ball.insert("uni1");
+        ball.remove("uni1");
+        assertEquals(ball.getSize(), 4);
+        assertEquals(ball.getUniqueSize(), 2);
+        ball.insert("uni2");
+        ball.insert("uni3");
+        int dups = ball.remove("dup1");
+        assertEquals(dups, 1);
+        dups = ball.remove("dup1");
+        assertEquals(dups, 0);
+        assertEquals(ball.getSize(), 4);
+        assertEquals(ball.getUniqueSize(), 3);
+        assertFalse(ball.contains("dup1"));
+        passed++;
     }
 
     @Test
     public void testRemoveAll() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
@@ -100,80 +283,186 @@ public class YarnTests {
         ball.removeAll("dup");
         assertEquals(ball.getSize(), 1);
         assertEquals(ball.getUniqueSize(), 1);
-        ball.removeAll("");
+        passed++;
+    }
+    @Test
+    public void testRemoveAll_t1() {
+        ball.removeAll("uni1");
+        ball.insert("uni1");
+        ball.removeAll("uni1");
+        assertEquals(ball.getSize(), 0);
+        assertFalse(ball.contains("uni1"));
+        passed++;
+    }
+    @Test
+    public void testRemoveAll_t2() {
+        ball.insert("uni1");
+        ball.insert("uni2");
+        ball.insert("uni3");
+        ball.removeAll("uni1");
+        ball.removeAll("uni2");
+        assertEquals(ball.getSize(), 1);
+        assertFalse(ball.contains("uni1"));
+        passed++;
+    }
+    @Test
+    public void testRemoveAll_t3() {
+        ball.insert("dup1");
+        ball.insert("dup1");
+        ball.insert("dup2");
+        ball.insert("dup2");
+        ball.insert("uni1");
+        ball.removeAll("dup1");
+        assertEquals(ball.getSize(), 3);
+        assertEquals(ball.getUniqueSize(), 2);
+        assertFalse(ball.contains("dup1"));
+        ball.removeAll("dup2");
         assertEquals(ball.getSize(), 1);
         assertEquals(ball.getUniqueSize(), 1);
+        ball.removeAll("uni1");
+        assertEquals(ball.getSize(), 0);
+        assertEquals(ball.getUniqueSize(), 0);
+        passed++;
     }
 
     @Test
     public void testCount() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
         assertEquals(ball.count("dup"), 2);
         assertEquals(ball.count("unique"), 1);
         assertEquals(ball.count("forneymon"), 0);
-        assertEquals(ball.count(""), 0);
+        passed++;
+    }
+    @Test
+    public void testCount_t1() {
+        ball.insert("dup");
+        ball.insert("dup");
+        ball.insert("dup");
+        assertEquals(ball.count("dup"), 3);
+        ball.removeAll("dup");
+        assertEquals(ball.count("dup"), 0);
+        passed++;
+    }
+    @Test
+    public void testCount_t2() {
+        ball.insert("dup");
+        ball.insert("dup2");
+        ball.insert("dup");
+        ball.insert("dup2");
+        assertEquals(ball.count("dup"), 2);
+        assertEquals(ball.count("dup2"), 2);
+        ball.removeAll("dup");
+        assertEquals(ball.count("dup"), 0);
+        ball.remove("dup2");
+        assertEquals(ball.count("dup2"), 1);
+        passed++;
     }
 
     @Test
     public void testContains() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
         assertTrue(ball.contains("dup"));
         assertTrue(ball.contains("unique"));
         assertFalse(ball.contains("forneymon"));
-        assertFalse(ball.contains(""));
+        passed++;
     }
+    // This is tested pretty much everywhere so...
 
     @Test
     public void testGetNth() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
         ball.insert("cool");
+        // To avoid double jeopardy with clone:
+        Yarn c = new Yarn();
+        c.insert("dup");
+        c.insert("dup");
+        c.insert("unique");
+        c.insert("cool");
+        for (int i = 0; i < ball.getSize(); i++) {
+            String gotten = ball.getNth(i);
+            assertTrue(c.contains(gotten));
+            c.remove(gotten);
+        }
+        passed++;
+    }
+    @Test
+    public void testGetNth_t1() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("c");
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("c");
+        Yarn c = ball.clone();
+        c.insert("a");
+        c.insert("b");
+        c.insert("c");
+        c.insert("a");
+        c.insert("b");
+        c.insert("c");
+        for (int i = 0; i < ball.getSize(); i++) {
+            String gotten = ball.getNth(i);
+            assertTrue(c.contains(gotten));
+            c.remove(gotten);
+        }
+        passed++;
+    }
+    @Test
+    public void testGetNth_t2() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("c");
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("c");
+        ball.remove("a");
+        ball.removeAll("b");
         Yarn comparison = ball.clone();
         for (int i = 0; i < ball.getSize(); i++) {
             String gotten = ball.getNth(i);
             assertTrue(comparison.contains(gotten));
             comparison.remove(gotten);
         }
-        
-        Yarn a = new Yarn();
-        a.insert("llama");
-        a.insert("llama");
-        a.insert("llama");
-        a.insert("llama");
-        assertEquals(a.getNth(3), "llama");
-        a.remove("llama");
-        a.insert("reject");
-        assertEquals(a.getNth(3), "reject");
+        passed++;
     }
 
     @Test
     public void testGetMostCommon() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
         ball.insert("cool");
         assertEquals(ball.getMostCommon(), "dup");
-        
-        Yarn a = new Yarn();
-        assertEquals(a.getMostCommon(), null);
-        a.insert("yes");
-        a.insert("no");
-        a.insert("maybe");
-        assertEquals(a.getMostCommon(), "yes");       
+        ball.insert("cool");
+        String mc = ball.getMostCommon();
+        assertTrue(mc.equals("dup") || mc.equals("cool"));
+        passed++;
+    }
+    @Test
+    public void testGetMostCommon_t1() {
+        assertEquals(ball.getMostCommon(), null);
+        passed++;
+    }
+    @Test
+    public void testGetMostCommon_t2() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("c");
+        String mc = ball.getMostCommon();
+        assertTrue(mc.equals("a") || mc.equals("b") || mc.equals("c"));
+        passed++;
     }
 
+    // Inter-yarn Tests
+    // -------------------------------------------------
     @Test
     public void testClone() {
-        Yarn ball = new Yarn();
         ball.insert("dup");
         ball.insert("dup");
         ball.insert("unique");
@@ -182,11 +471,26 @@ public class YarnTests {
         assertEquals(dolly.count("unique"), 1);
         dolly.insert("cool");
         assertFalse(ball.contains("cool"));
-        
-        int a = ball.getSize();
-        int b = ball.getUniqueSize();        
-        assertEquals(dolly.getSize(), a);
-        assertEquals(dolly.getUniqueSize(), b);
+        passed++;
+    }
+    @Test
+    public void testClone_t1() {
+        Yarn dolly = ball.clone();
+        ball.insert("a");
+        assertFalse(dolly.contains("a"));
+        passed++;
+    }
+    @Test
+    public void testClone_t2() {
+        ball.insert("a");
+        Yarn dolly = ball.clone();
+        dolly.insert("b");
+        Yarn superDolly = dolly.clone();
+        superDolly.insert("c");
+        assertTrue(superDolly.contains("a"));
+        assertTrue(superDolly.contains("b"));
+        assertFalse(dolly.contains("c"));
+        passed++;
     }
 
     @Test
@@ -204,10 +508,43 @@ public class YarnTests {
         assertTrue(y2.contains("dup"));
         assertTrue(y2.contains("unique"));
         assertFalse(y1.contains("dup"));
-
-        assertEquals(y2.count("dup"), 2);
+        passed++;
+    }
+    @Test
+    public void testSwap_t1() {
+        Yarn y2 = new Yarn();
+        ball.insert("a");
+        y2.swap(ball);
+        assertTrue(ball.isEmpty());
+        assertFalse(y2.isEmpty());
+        passed++;
+    }
+    @Test
+    public void testSwap_t2() {
+        Yarn y2 = new Yarn();
+        Yarn y3 = new Yarn();
+        y2.insert("a");
+        ball.insert("b");
+        y2.swap(ball);
+        y3.swap(y2);
+        assertTrue(y2.isEmpty());
+        assertTrue(ball.contains("a"));
+        assertTrue(y3.contains("b"));
+        ball.insert("c");
+        assertFalse(y2.contains("c"));
+        passed++;
+    }
+    @Test
+    public void testSwap_t3() {
+        ball.insert("a");
+        ball.swap(ball);
+        assertTrue(ball.contains("a"));
+        assertEquals(ball.getSize(), 1);
+        passed++;
     }
 
+    // Static Method Tests
+    // -------------------------------------------------
     @Test
     public void testKnit() {
         Yarn y1 = new Yarn();
@@ -217,20 +554,33 @@ public class YarnTests {
         Yarn y2 = new Yarn();
         y2.insert("dup");
         y2.insert("cool");
-        
-        int a1 = y1.getSize();
-        int b1 = y2.getSize();
-        int yarn3ExpectedSize = a1 + b1;
-        
         Yarn y3 = Yarn.knit(y1, y2);
-        assertEquals(y3.getSize(), yarn3ExpectedSize);
-        
         assertEquals(y3.count("dup"), 3);
         assertEquals(y3.count("unique"), 1);
         assertEquals(y3.count("cool"), 1);
         y3.insert("test");
         assertFalse(y1.contains("test"));
-        assertFalse(y2.contains("test"));        
+        assertFalse(y2.contains("test"));
+        passed++;
+    }
+    @Test
+    public void testKnit_t1() {
+        Yarn y1 = new Yarn();
+        y1.insert("a");
+        y1.insert("b");
+        Yarn y3 = Yarn.knit(ball, y1);
+        assertEquals(y3.getSize(), 2);
+        assertEquals(y3.getUniqueSize(), 2);
+        passed++;
+    }
+    @Test
+    public void testKnit_t2() {
+        ball.insert("a");
+        ball.insert("a");
+        ball = Yarn.knit(ball, ball);
+        assertEquals(ball.getSize(), 4);
+        assertEquals(ball.getUniqueSize(), 1);
+        passed++;
     }
 
     @Test
@@ -249,10 +599,30 @@ public class YarnTests {
         y3.insert("test");
         assertFalse(y1.contains("test"));
         assertFalse(y2.contains("test"));
-
-        Yarn a = new Yarn();
-        Yarn b = new Yarn();
-        assertEquals(Yarn.tear(a, b), 0);
+        passed++;
+    }
+    @Test
+    public void testTear_t1() {
+        Yarn y1 = new Yarn();
+        y1.insert("a");
+        y1.insert("b");
+        Yarn y2 = Yarn.tear(ball, y1);
+        assertEquals(y2.getSize(), 0);
+        assertFalse(y2.contains("a"));
+        passed++;
+    }
+    @Test
+    public void testTear_t2() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("a");
+        Yarn y1 = new Yarn();
+        y1.insert("a");
+        y1.insert("a");
+        Yarn y2 = Yarn.tear(ball, y1);
+        assertEquals(y2.getSize(), 1);
+        assertFalse(y2.contains("a"));
+        passed++;
     }
 
     @Test
@@ -269,10 +639,30 @@ public class YarnTests {
         assertTrue(Yarn.sameYarn(y2, y1));
         y2.insert("test");
         assertFalse(Yarn.sameYarn(y1, y2));
-
-        Yarn a = new Yarn();
-        Yarn b = new Yarn();
-        assertTrue(Yarn.sameYarn(a, b));
-        
+        passed++;
     }
+    @Test
+    public void testSameYarn_t1() {
+        Yarn y1 = new Yarn();
+        assertTrue(Yarn.sameYarn(ball, y1));
+        assertTrue(Yarn.sameYarn(y1, y1));
+        y1.insert("a");
+        assertTrue(Yarn.sameYarn(y1, y1));
+        passed++;
+    }
+    @Test
+    public void testSameYarn_t2() {
+        ball.insert("a");
+        ball.insert("b");
+        ball.insert("b");
+        Yarn y1 = new Yarn();
+        y1.insert("b");
+        y1.insert("a");
+        assertFalse(Yarn.sameYarn(ball, y1));
+        ball.removeAll("b");
+        y1.removeAll("b");
+        assertTrue(Yarn.sameYarn(ball, y1));
+        passed++;
+    }
+
 }
